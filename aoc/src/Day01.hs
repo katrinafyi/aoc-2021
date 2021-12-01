@@ -1,6 +1,5 @@
 import Lib
 
-
 solve :: Int -> [Int] -> Int
 solve w xs = length $ filter id $ zipWith (<) sums (tail sums)
     where sums = sum <$> sliding w xs

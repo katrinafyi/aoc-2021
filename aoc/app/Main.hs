@@ -1,4 +1,4 @@
 module Main where
 
 main :: IO ()
-main = pure ()
+main = putStrLn "Executed Main.hs."

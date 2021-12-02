@@ -38,6 +38,9 @@ executables:
   d1:
     <<: *exe-defaults
     main:                Day01.hs
+  d2:
+    <<: *exe-defaults
+    main:                Day02.hs
     
 
 tests:

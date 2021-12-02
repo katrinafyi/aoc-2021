@@ -1,3 +1,5 @@
+module Main where
+
 import Lib
 
 solve :: Int -> [Int] -> Int

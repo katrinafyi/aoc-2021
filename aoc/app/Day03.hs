@@ -9,18 +9,6 @@ import Control.Applicative
 
 import Lib
 
-liftTuple :: (a -> b) -> (a, a) -> (b, b)
-liftTuple f (x, y) = (f x, f y)
-
-step :: ((Int, Int), Int) -> [Int]
-step (d, n) = [n * fst d, n * snd d]
-
-cumsum :: [Int] -> [Int]
-cumsum xs = go 0 xs
-    where
-    go n [] = []
-    go n (x:xs) = (x+n):go (x+n) xs
-
 binToInt :: String -> Maybe Int
 binToInt = fmap fst . listToMaybe . readInt 2 (`elem` "01") digitToInt
 

@@ -41,7 +41,10 @@ executables:
   d2:
     <<: *exe-defaults
     main:                Day02.hs
-    
+  d3:
+    <<: *exe-defaults
+    main:                Day03.hs
+
 
 tests:
   aoc-test:

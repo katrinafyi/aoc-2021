@@ -7,7 +7,7 @@ import Data.Maybe
 import Text.Read(readMaybe)
 import Control.Applicative
 
-import Lib
+import Lib hiding (replace)
 
 binToInt :: String -> Maybe Int
 binToInt = fmap fst . listToMaybe . readInt 2 (`elem` "01") digitToInt

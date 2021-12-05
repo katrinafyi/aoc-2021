@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- containers
 
 library:
   source-dirs: src
@@ -47,6 +48,9 @@ executables:
   d4:
     <<: *exe-defaults
     main:                Day04.hs
+  d5:
+    <<: *exe-defaults
+    main:                Day05.hs
 
 
 tests:

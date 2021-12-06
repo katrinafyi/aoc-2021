@@ -12,8 +12,10 @@ import Lib
 
 
 modifyNth :: Int -> (a -> a) -> [a] -> [a]
-modifyNth n f xs = take n xs ++ (fmap f (take 1 back)) ++ drop 1 back
-    where (front, back) = splitAt n xs
+modifyNth n f xs = front ++ fmap f backHead ++ backTail
+    where 
+        (front, back) = splitAt n xs
+        (backHead, backTail) = splitAt 1 back
 
 
 step :: [Int] -> [Int]

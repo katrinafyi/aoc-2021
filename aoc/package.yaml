@@ -51,6 +51,9 @@ executables:
   d5:
     <<: *exe-defaults
     main:                Day05.hs
+  d6:
+    <<: *exe-defaults
+    main:                Day06.hs
 
 
 tests:

@@ -29,3 +29,9 @@ ints s = catMaybes $ readMaybe <$> words digits
 
 increment :: (Ord a, Integral b) => a -> M.Map a b -> M.Map a b
 increment k = M.insertWith (+) k 1
+
+modifyNth :: Int -> (a -> a) -> [a] -> [a]
+modifyNth n f xs = front ++ fmap f backHead ++ backTail
+    where
+        (front, back) = splitAt n xs
+        (backHead, backTail) = splitAt 1 back

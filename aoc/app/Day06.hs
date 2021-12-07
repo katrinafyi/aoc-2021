@@ -11,13 +11,6 @@ import qualified Data.Map.Strict as M
 import Lib
 
 
-modifyNth :: Int -> (a -> a) -> [a] -> [a]
-modifyNth n f xs = front ++ fmap f backHead ++ backTail
-    where 
-        (front, back) = splitAt n xs
-        (backHead, backTail) = splitAt 1 back
-
-
 step :: [Int] -> [Int]
 step (x:xs) = modifyNth 6 (+x) $ xs ++ [x]
 

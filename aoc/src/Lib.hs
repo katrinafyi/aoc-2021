@@ -1,5 +1,6 @@
 module Lib where
 
+import Data.List
 import Data.Char
 import Data.Maybe
 import qualified Data.Map.Strict as M
@@ -35,3 +36,14 @@ modifyNth n f xs = front ++ fmap f backHead ++ backTail
     where
         (front, back) = splitAt n xs
         (backHead, backTail) = splitAt 1 back
+
+-- median :: (Num a, Fractional b) => [a] -> b
+-- median xs
+--     | len `mod` 2 == 1 = fromIntegral $ xs !! mid
+--     | otherwise = (fromIntegral (xs !! (mid-1)) + fromIntegral (xs !! mid)) / 2
+--     where
+--         len = length xs
+--         mid = len `div` 2
+
+average :: (Real a, Fractional b) => [a] -> b
+average xs = realToFrac (sum xs) / genericLength xs

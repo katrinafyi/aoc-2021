@@ -13,6 +13,7 @@ import qualified Data.Sequence as SS
 import Lib
 import Data.Function
 import Control.Monad (guard)
+import Debug.Trace
 
 
 
@@ -40,19 +41,14 @@ localMin m pos = all (> x) adjs
 solve1 :: M.Map (Int,Int) Int -> Int
 solve1 m = sum $ (+1) <$> M.filterWithKey (const . localMin m) m
 
-basin :: M.Map (Int,Int) Int -> (Int,Int) -> [(Int,Int)]
-basin m bot = go [] (SS.singleton bot)
-    where
-        go :: [(Int,Int)] -> SS.Seq (Int,Int) -> [(Int,Int)]
-        go seen SS.Empty = seen
-        go seen (x SS.:<| xs) = do
-            let val = m M.! x
-            let adjs = filter (`M.member` m) $ adjacents x \\ seen
-            if all ((> val) . (m M.!)) adjs
-                then go (x:seen) (xs SS.>< SS.fromList adjs)
-                else go seen xs
-        getVal x = m M.!? x
+bimap2 :: (a -> b -> c) -> (d -> e -> f) -> (a, d) -> (b, e) -> (c, f)
+bimap2 f g (a,d) (b,e) = (f a b, g d e)
 
+basin :: M.Map (Int,Int) Int -> (Int,Int) -> [(Int,Int)]
+basin m bot = do
+    guard $ localMin m bot
+    let adjs = traceShowId $ filter (`M.member` m) $ adjacents bot
+    bot : S.toList (foldl (\seen a -> S.fromList $ basin (M.restrictKeys m seen) a) (S.singleton bot) adjs)
 ins :: M.Map (Int, Int) Int
 ins = M.fromList [((0,0),2),((0,1),1),((0,2),9),((0,3),9),((0,4),9),((0,5),4),((0,6),3),((0,7),2),((0,8),1),((0,9),0),((1,0),3),((1,1),9),((1,2),8),((1,3),7),((1,4),8),((1,5),9),((1,6),4),((1,7),9),((1,8),2),((1,9),1),((2,0),9),((2,1),8),((2,2),5),((2,3),6),((2,4),7),((2,5),8),((2,6),9),((2,7),8),((2,8),9),((2,9),2),((3,0),8),((3,1),7),((3,2),6),((3,3),7),((3,4),8),((3,5),9),((3,6),6),((3,7),7),((3,8),8),((3,9),9),((4,0),9),((4,1),8),((4,2),9),((4,3),9),((4,4),9),((4,5),6),((4,6),5),((4,7),6),((4,8),7),((4,9),8)]
 

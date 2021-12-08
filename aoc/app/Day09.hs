@@ -46,16 +46,12 @@ basin map bot = go map [bot]
         go :: M.Map (Int,Int) Int -> [(Int,Int)] -> [(Int,Int)]
         go m [] = M.keys $ M.difference map m
         go m (x:xs)
-            | val < 9 && isLower = go m' (xs ++ adjs)
+            | val < 9 = go m' (xs ++ adjs)
             | otherwise = go m xs
             where
                 adjs = filter (`M.member` m) $ adjacents x
                 m' = M.delete x m
                 val = fromMaybe 10 $ m M.!? x
-                isLower = all ((>= val) . fromMaybe 9 . (m M.!?)) adjs
-
-ins :: M.Map (Int, Int) Int
-ins = M.fromList [((0,0),2),((0,1),1),((0,2),9),((0,3),9),((0,4),9),((0,5),4),((0,6),3),((0,7),2),((0,8),1),((0,9),0),((1,0),3),((1,1),9),((1,2),8),((1,3),7),((1,4),8),((1,5),9),((1,6),4),((1,7),9),((1,8),2),((1,9),1),((2,0),9),((2,1),8),((2,2),5),((2,3),6),((2,4),7),((2,5),8),((2,6),9),((2,7),8),((2,8),9),((2,9),2),((3,0),8),((3,1),7),((3,2),6),((3,3),7),((3,4),8),((3,5),9),((3,6),6),((3,7),7),((3,8),8),((3,9),9),((4,0),9),((4,1),8),((4,2),9),((4,3),9),((4,4),9),((4,5),6),((4,6),5),((4,7),6),((4,8),7),((4,9),8)]
 
 -- solve2 :: M.Map (Int,Int) Int -> Int
 solve2 m = product $ take 3 $ reverse $ sort $ length <$> basin m <$> mins

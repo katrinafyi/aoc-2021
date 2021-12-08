@@ -74,22 +74,38 @@ solveDigits' sigs x = fromJust $ lookup x assocs
         -- returns letters appearing n times across all signals
         byFreq n = filterByFreq n (concat sigs)
 
-        cf = one $ byLen 2
-        acf = one $ byLen 3
-        bcdf = one $ byLen 4
+        -- signal lengths: 2, 3, 4, 5, 6, 7
+        cf = one $ byLen 2 -- 1
+        acf = one $ byLen 3 -- 7
+        bcdf = one $ byLen 4 -- 4
+        abcdefg = one $ byLen 7 -- 8
 
         a = one $ acf \\ cf
+        bd = bcdf \\ cf
+
+        adg = foldl1 intersect (byLen 5) -- 2,3,5
+        abfg = foldl1 intersect (byLen 6) -- 0,6,9
+
+        ag = adg `intersect` abfg
+
+        g = one $ ag \\ [a]
+        d = one $ adg \\ ag
+        b = one $ bd \\ [d]
+        f = one $ abfg `intersect` cf
+        c = one $ cf \\ [f]
+
+        e = one $ abcdefg \\ [a,b,c,d,f,g]
 
         -- byFreq: a 8, b 6, c 8, d 7, e 4, f 9, g 7
-        b = one $ byFreq 6
-        e = one $ byFreq 4
-        f = one $ byFreq 9
-        ac = byFreq 8
-        dg = byFreq 7
+        -- b = one $ byFreq 6
+        -- e = one $ byFreq 4
+        -- f = one $ byFreq 9
+        -- ac = byFreq 8
+        -- dg = byFreq 7
 
-        c = one $ cf \\ [f]
-        d = one $ bcdf \\ [b,c,f]
-        g = one $ dg \\ [d]
+        -- c = one $ cf \\ [f]
+        -- d = one $ bcdf \\ [b,c,f]
+        -- g = one $ dg \\ [d]
 
 
 sigToDigit :: [Out] -> Int

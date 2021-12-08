@@ -8,6 +8,7 @@ import Text.Read(readMaybe)
 import Control.Applicative
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
+import qualified Data.Sequence as SS
 
 import Lib
 import Data.Function
@@ -40,22 +41,23 @@ solve1 :: M.Map (Int,Int) Int -> Int
 solve1 m = sum $ (+1) <$> M.filterWithKey (const . localMin m) m
 
 basin :: M.Map (Int,Int) Int -> (Int,Int) -> [(Int,Int)]
-basin m bot = go [] [bot]
+basin m bot = go [] (SS.singleton bot)
     where
-        go :: [(Int,Int)] -> [(Int,Int)] -> [(Int,Int)]
-        go seen [] = seen
-        go seen (x:xs) = do
+        go :: [(Int,Int)] -> SS.Seq (Int,Int) -> [(Int,Int)]
+        go seen SS.Empty = seen
+        go seen (x SS.:<| xs) = do
             let val = m M.! x
-            let seen' = x:seen
-            let adjs = filter (`M.member` m) $ adjacents x \\ seen'
-            let isHigher v' = v' > val && v' < 9
-            if all (isHigher . (m M.!)) adjs
-                then go (x:seen) (xs++adjs)
+            let adjs = filter (`M.member` m) $ adjacents x \\ seen
+            if all ((> val) . (m M.!)) adjs
+                then go (x:seen) (xs SS.>< SS.fromList adjs)
                 else go seen xs
         getVal x = m M.!? x
 
-solve2 :: M.Map (Int,Int) Int -> Int
-solve2 m = product $ length <$> basin m <$> mins
+ins :: M.Map (Int, Int) Int
+ins = M.fromList [((0,0),2),((0,1),1),((0,2),9),((0,3),9),((0,4),9),((0,5),4),((0,6),3),((0,7),2),((0,8),1),((0,9),0),((1,0),3),((1,1),9),((1,2),8),((1,3),7),((1,4),8),((1,5),9),((1,6),4),((1,7),9),((1,8),2),((1,9),1),((2,0),9),((2,1),8),((2,2),5),((2,3),6),((2,4),7),((2,5),8),((2,6),9),((2,7),8),((2,8),9),((2,9),2),((3,0),8),((3,1),7),((3,2),6),((3,3),7),((3,4),8),((3,5),9),((3,6),6),((3,7),7),((3,8),8),((3,9),9),((4,0),9),((4,1),8),((4,2),9),((4,3),9),((4,4),9),((4,5),6),((4,6),5),((4,7),6),((4,8),7),((4,9),8)]
+
+-- solve2 :: M.Map (Int,Int) Int -> Int
+solve2 m = length <$> basin m <$> mins
     where
         mins = M.keys $ M.filterWithKey (const . localMin m) m
 

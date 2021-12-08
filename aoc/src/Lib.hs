@@ -47,3 +47,13 @@ modifyNth n f xs = front ++ fmap f backHead ++ backTail
 
 average :: (Real a, Fractional b) => [a] -> b
 average xs = realToFrac (sum xs) / genericLength xs
+
+filterByFreq :: Ord a => Int -> [a] -> [a]
+filterByFreq n = concatMap (take 1) . filter ((== n) . length) . group . sort
+
+one :: [a] -> a
+one [x] = x
+one _ = error "list does not contain exactly one element"
+
+zipMap :: (a -> b) -> [a] -> [(a, b)]
+zipMap f = zip <$> id <*> fmap f

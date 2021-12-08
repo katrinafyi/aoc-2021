@@ -60,6 +60,9 @@ executables:
   d8:
     <<: *exe-defaults
     main:                Day08.hs
+  d9:
+    <<: *exe-defaults
+    main:                Day09.hs
 
 
 tests:

@@ -19,9 +19,6 @@ import Control.Monad (guard)
 parseLine :: [Char] -> [Int]
 parseLine = fmap (read . pure)
 
-adjacents :: (Int,Int) -> [(Int,Int)]
-adjacents (r,c) = [(r+1,c), (r-1,c), (r,c+1), (r,c-1)]
-
 parse :: String -> M.Map (Int,Int) Int
 parse raw = M.fromList $ do
         (r, cols) <- rows'

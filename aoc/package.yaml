@@ -63,6 +63,9 @@ executables:
   d9:
     <<: *exe-defaults
     main:                Day09.hs
+  d10:
+    <<: *exe-defaults
+    main:                Day10.hs
 
 
 tests:

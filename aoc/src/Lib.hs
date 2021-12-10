@@ -57,3 +57,12 @@ one _ = error "list does not contain exactly one element"
 
 zipMap :: (a -> b) -> [a] -> [(a, b)]
 zipMap f = zip <$> id <*> fmap f
+
+adjacents :: (Int,Int) -> [(Int,Int)]
+adjacents (r,c) = [(r+1,c), (r-1,c), (r,c+1), (r,c-1)]
+
+makeGrid :: [[a]] -> [((Int,Int),a)]
+makeGrid rows = do
+    (r, cols) <- zip [0..] rows
+    (c, x) <- zip [0..] cols
+    pure ((r, c), x)

@@ -16,18 +16,18 @@ import Control.Monad (guard)
 
 data Side = L | R deriving (Eq, Show)
 data Type = Round | Square | Angle | Curly deriving (Eq, Show)
-data Bracket = Bracket { bSide :: Side, bType :: Type } deriving (Eq, Show)
+data Bracket = B { bSide :: Side, bType :: Type } deriving (Eq, Show)
 
 parseB :: Char -> Maybe Bracket
 parseB c = case c of
-    '(' -> Just $ Bracket L Round
-    ')' -> Just $ Bracket R Round
-    '[' -> Just $ Bracket L Square
-    ']' -> Just $ Bracket R Square
-    '{' -> Just $ Bracket L Curly
-    '}' -> Just $ Bracket R Curly
-    '<' -> Just $ Bracket L Angle
-    '>' -> Just $ Bracket R Angle
+    '(' -> Just $ B L Round
+    ')' -> Just $ B R Round
+    '[' -> Just $ B L Square
+    ']' -> Just $ B R Square
+    '{' -> Just $ B L Curly
+    '}' -> Just $ B R Curly
+    '<' -> Just $ B L Angle
+    '>' -> Just $ B R Angle
     _ -> Nothing
 
 parseLine :: [Char] -> [Bracket]
@@ -36,17 +36,21 @@ parseLine = mapMaybe parseB
 parse :: String -> [[Bracket]]
 parse = fmap parseLine . lines
 
+isPair :: Bracket -> Bracket -> Bool
+isPair (B L t1) (B R t2) = t1 == t2
+isPair _ _ = False
+
 mismatched :: [Bracket] -> [Bracket]
 mismatched = go []
     where
-        -- stack of type of opened brackets; bracket sequence
+        -- stack of opened brackets; bracket sequence
         -- returns mismatched brackets
-        go :: [Type] -> [Bracket] -> [Bracket]
-        go ls [] = Bracket L <$> ls
-        go ls (b@(Bracket L t):bs) = go (t:ls) bs
-        go ls (b@(Bracket R t):bs)
-            | [t] == take 1 ls = go (drop 1 ls) bs
-            | otherwise = b : go ls bs
+        go :: [Bracket] -> [Bracket] -> [Bracket]
+        go ls [] = ls
+        go ls (b@(B L _):bs) = go (b:ls) bs
+        go (l:ls) (b:bs)
+            | isPair l b = go ls bs
+        go ls (b:bs) = b : go ls bs
 
 score :: Type -> Int
 score Round = 3

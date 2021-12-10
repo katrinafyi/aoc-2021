@@ -44,10 +44,9 @@ mismatched = go []
         go :: [Type] -> [Bracket] -> [Bracket]
         go ls [] = Bracket L <$> ls
         go ls (b@(Bracket L t):bs) = go (t:ls) bs
-        go [] (b@(Bracket R _):bs) = b : go [] bs
-        go (l:ls) (b@(Bracket R t):bs)
-            | l == t = go ls bs
-            | otherwise = b : go (l:ls) bs
+        go ls (b@(Bracket R t):bs)
+            | [t] == take 1 ls = go (drop 1 ls) bs
+            | otherwise = b : go ls bs
 
 score :: Type -> Int
 score Round = 3
@@ -77,9 +76,7 @@ score2 Curly = 3
 score2 Angle = 4
 
 solveLine2 :: [Bracket] -> Int
-solveLine2 bs = foldl1' (\a x -> 5*a + x) $ fmap (score2 . bType) mis
-    where
-        mis = mismatched bs
+solveLine2 = foldl1' (\a x -> 5*a + x) . fmap (score2 . bType) . mismatched
 
 solve2 :: [[Bracket]] -> Int
 solve2 bs = nums !! (length nums `div` 2)

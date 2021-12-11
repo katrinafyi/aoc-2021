@@ -5,6 +5,8 @@ import Data.Char
 import Data.Maybe
 import qualified Data.Map.Strict as M
 import Text.Read
+import Data.Bifunctor
+import Data.Tuple
 
 slidingParts :: Int -> [a] -> [[a]]
 slidingParts _ [] = []
@@ -66,3 +68,6 @@ makeGrid rows = do
     (r, cols) <- zip [0..] rows
     (c, x) <- zip [0..] cols
     pure ((r, c), x)
+
+makeGridXY :: [[c]] -> [((Int, Int), c)]
+makeGridXY = fmap (first swap) . makeGrid

@@ -19,10 +19,10 @@ import Data.Tuple
 type Graph = M.Map String [String]
 
 parse :: [Char] -> Graph
-parse raw = foldl (\m (f,t) -> M.insertWith (++) f [t] m) M.empty ls'
+parse raw = foldl (\m [f,t] -> M.insertWith (++) f [t] m) M.empty ls'
     where
         ls = fmap words $ lines $ replace '-' ' ' raw
-        ls' = two <$> ls ++ fmap reverse ls
+        ls' = ls ++ fmap reverse ls
 
 isBig :: [Char] -> Bool
 isBig = all isUpper . take 1

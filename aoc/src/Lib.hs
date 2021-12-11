@@ -7,6 +7,7 @@ import qualified Data.Map.Strict as M
 import Text.Read
 import Data.Bifunctor
 import Data.Tuple
+import Control.Applicative
 
 slidingParts :: Int -> [a] -> [[a]]
 slidingParts _ [] = []
@@ -77,3 +78,10 @@ both = bimap <$> id <*> id
 
 both2 :: (a -> a -> a) -> (a, a) -> (a, a) -> (a, a)
 both2 f (x,y) = bimap (f x) (f y)
+
+cartesian2 :: [a] -> [b] -> [(a,b)]
+cartesian2 = liftA2 (,)
+
+two :: [a] -> (a,a)
+two [x,y] = (x,y)
+two _ = error "two: list does not contain exactly two elements"

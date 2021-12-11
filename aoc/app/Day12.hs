@@ -18,11 +18,11 @@ import Data.Tuple
 
 type Graph = M.Map String [String]
 
-parse :: [Char] -> M.Map String [String]
-parse raw = foldl (\m ft -> M.insertWith (++) (ft!!0) [ft!!1] m) M.empty ls'
+parse :: [Char] -> Graph
+parse raw = foldl (\m (f,t) -> M.insertWith (++) f [t] m) M.empty ls'
     where
         ls = fmap words $ lines $ replace '-' ' ' raw
-        ls' = ls ++ fmap reverse ls
+        ls' = two <$> ls ++ fmap reverse ls
 
 isBig :: [Char] -> Bool
 isBig = all isUpper . take 1
@@ -30,35 +30,25 @@ isBig = all isUpper . take 1
 isSmall :: [Char] -> Bool
 isSmall = not . isBig
 
-cartesian2 :: [a] -> [b] -> [(a,b)]
-cartesian2 = liftA2 (,)
+go :: Graph -> S.Set String -> Maybe String -> String -> [[String]]
+go _ _ _ "end" = [["end"]]
+go m s t x = do
+    guard $ t /= Just "start"
+    guard $ isBig x || x `S.notMember` s || isNothing t
+    let t' = if isSmall x && x `S.member` s then Just x else t
+    x' <- fromMaybe [] $ m M.!? x
+    (x:) <$> go m (S.insert x s) t' x'
 
-allPaths :: M.Map String [String] -> [[String]]
-allPaths m = go S.empty "start"
-    where
-        go :: S.Set String -> String -> [[String]]
-        go _ "end" = [["end"]]
-        go s x = do
-            guard $ isBig x || x `S.notMember` s
-            x' <- fromMaybe [] $ m M.!? x
-            (x:) <$> go (S.insert x s) x'
+allPaths :: Graph -> [[String]]
+allPaths m = go m S.empty (Just "") "start"
 
-allPaths2 :: M.Map String [String] -> [[String]]
-allPaths2 m = go S.empty Nothing "start"
-    where
-        go :: S.Set String -> Maybe String -> String -> [[String]]
-        go _ _ "end" = [["end"]]
-        go s t x = do
-            guard $ t /= Just "start"
-            guard $ isBig x || x `S.notMember` s || isNothing t
-            let t' = if isSmall x && x `S.member` s then Just x else t
-            x' <- fromMaybe [] $ m M.!? x
-            (x:) <$> go (S.insert x s) t' x'
+allPaths2 :: Graph -> [[String]]
+allPaths2 m = go m S.empty Nothing "start"
 
-solve1 :: M.Map String [String] -> Int
+solve1 :: Graph -> Int
 solve1 = length . allPaths
 
-solve2 :: M.Map String [String] -> Int
+solve2 :: Graph -> Int
 solve2 = length . allPaths2
 
 main' :: String -> IO ()

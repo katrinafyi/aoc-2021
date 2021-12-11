@@ -29,12 +29,12 @@ adjacents8 (x,y) = do
         deltas = sequence [[-1, 0, 1], [-1, 0, 1]]
 
 flash :: Board -> (Board, Board) -- returns (board', flashed)
-flash m = go (fmap (+1) m) M.empty
+flash = go M.empty . fmap (+1)
     where
         go :: Board -> Board -> (Board, Board)
-        go m f
+        go f m
             | null nines = (m, 0 <$ f)
-            | otherwise = go m' (M.union f nines)
+            | otherwise = go (M.union f nines) m'
             where
                 (nines, nonNine) = M.partition (>9) m
                 adjs = concatMap adjacents8 $ M.keys nines

@@ -71,3 +71,6 @@ makeGrid rows = do
 
 makeGridXY :: [[c]] -> [((Int, Int), c)]
 makeGridXY = fmap (first swap) . makeGrid
+
+lift2 :: (a -> a -> a) -> (a, a) -> (a, a) -> (a, a)
+lift2 f (x,y) = bimap (f x) (f y)

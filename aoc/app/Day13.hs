@@ -38,7 +38,7 @@ doFoldY n b = top <> bot'
         bot' = S.map (second $ \y -> n - abs (y-n)) bot
 
 doFoldX :: Int -> S.Set (Int,Int) -> S.Set (Int,Int)
-doFoldX n b = S.map swap $ doFoldY n $ S.map swap b
+doFoldX n = S.map swap . doFoldY n . S.map swap
 
 doFold :: Fold -> S.Set (Int,Int) -> S.Set (Int,Int)
 doFold (FoldX n) = doFoldX n

@@ -32,10 +32,10 @@ parse raw = (dots, parseFold <$> tail fs)
         dots = S.fromList $ two . ints <$> ds
 
 doFoldY :: Int -> S.Set (Int,Int) -> S.Set (Int,Int)
-doFoldY n b = S.union top bot'
+doFoldY n b = top <> bot'
     where
         (top, bot) = S.partition ((<n) . snd) b
-        bot' = S.map (\(x,y) -> (x, n - abs (y-n))) bot
+        bot' = S.map (second $ \y -> n - abs (y-n)) bot
 
 doFoldX :: Int -> S.Set (Int,Int) -> S.Set (Int,Int)
 doFoldX n b = S.map swap $ doFoldY n $ S.map swap b

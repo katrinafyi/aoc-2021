@@ -25,34 +25,30 @@ parseFold s
     | otherwise = FoldY n
     where [n] = ints s
 
-parse :: String -> ([[Bool]], [Fold])
-parse raw = (board, parseFold <$> tail fs)
+parse :: String -> (S.Set (Int,Int), [Fold])
+parse raw = (dots, parseFold <$> tail fs)
     where
         (ds, fs) = break null $ lines raw
-        dots = two . ints <$> ds
-        maxX = maximum $ fmap fst dots
-        maxY = maximum $ fmap snd dots
-        board = (\y -> (\x -> (x,y) `elem` dots) <$> [0..maxX]) <$> [0..maxY]
+        dots = S.fromList $ two . ints <$> ds
 
-doFoldY :: Int -> [[Bool]] -> [[Bool]]
-doFoldY n b = zipWith (zipWith (||)) top (reverse bot')
+doFoldY :: Int -> S.Set (Int,Int) -> S.Set (Int,Int)
+doFoldY n b = S.union top bot'
     where
-        top = take n b
-        bot = drop (n+1) b
-        bot' = bot ++ replicate (n - length bot) (repeat False)
+        (top, bot) = S.partition ((<n) . snd) b
+        bot' = S.map (\(x,y) -> (x, n - abs (y-n))) bot
 
-doFoldX :: Int -> [[Bool]] -> [[Bool]]
-doFoldX n b = transpose $ doFoldY n $ transpose b
+doFoldX :: Int -> S.Set (Int,Int) -> S.Set (Int,Int)
+doFoldX n b = S.map swap $ doFoldY n $ S.map swap b
 
-doFold :: Fold -> [[Bool]] -> [[Bool]]
+doFold :: Fold -> S.Set (Int,Int) -> S.Set (Int,Int)
 doFold (FoldX n) = doFoldX n
 doFold (FoldY n) = doFoldY n
 
-solve1 :: ([[Bool]], [Fold]) -> Int
-solve1 (b, f:_) = count id $ concat $ doFold f b
+solve1 :: (S.Set (Int,Int), [Fold]) -> Int
+solve1 (b, f:_) = length $ doFold f b
 solve1 (_, _) = undefined
 
-solve2 :: ([[Bool]], [Fold]) -> [[Bool]]
+solve2 :: (S.Set (Int,Int), [Fold]) -> S.Set (Int,Int)
 solve2 (b, fs) = foldl' (flip doFold) b fs
 
 main' :: String -> IO ()
@@ -62,7 +58,12 @@ main' raw = do
 
     print $ solve1 input
     let s2 = solve2 input
-    mapM_ putStrLn $ fmap (bool ' ' '#') <$> s2
+    print $ s2
+    let maxX = maximum $ S.map fst s2
+    let maxY = maximum $ S.map snd s2
+    let ls = chunks (maxX+1) $ bool ' ' '#' . (`S.member` s2) . swap <$> cartesian2 [0..maxY] [0..maxX]
+    mapM_ putStrLn ls
+
 
 run :: IO ()
 run = readFile "in/13.txt" >>= main'

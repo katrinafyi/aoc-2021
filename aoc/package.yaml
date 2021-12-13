@@ -72,6 +72,9 @@ executables:
   d12:
     <<: *exe-defaults
     main:                Day12.hs
+  d13:
+    <<: *exe-defaults
+    main:                Day13.hs
 
 
 tests:

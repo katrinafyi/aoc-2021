@@ -20,11 +20,11 @@ chunks :: Int -> [a] -> [[a]]
 chunks _ [] = []
 chunks n xs = take n xs : chunks n (drop n xs)
 
-replace :: Eq a => a -> a -> [a] -> [a]
+replace :: Functor f => Eq a => a -> a -> f a -> f a
 replace a b = fmap (\c -> if c == a then b else c)
 
-count :: (a -> Bool) -> [a] -> Int
-count f xs = length $ filter f xs
+count :: Foldable f => (a -> Bool) -> f a -> Int
+count f = foldl' (\a x -> if f x then a+1 else a) 0
 
 ints :: String -> [Int]
 ints s = catMaybes $ readMaybe <$> words digits

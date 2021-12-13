@@ -41,19 +41,16 @@ flash = go M.empty . fmap (+1)
                 m' = foldr (M.adjust (+1)) nonNine adjs
 
 
-step :: Board -> (Int, Board)
-step m = (length f, M.union m' f)
+step :: Board -> Board
+step m = M.union m' f
     where (m', f) = flash m
 
-step' :: (Int, Board) -> (Int, Board)
-step' (n, b) = first (+n) $ step b
 
-solve1 :: Board -> (Int, Board)
-solve1 b = iterate step' (0, b) !! 100
+solve1 :: Board -> Int
+solve1 = sum . fmap (count (==0)) . take 100 . tail . iterate step
 
 solve2 :: Board -> (Int, Board)
-solve2 m = bimap length head $ break (all (==0)) steps
-    where steps = snd <$> iterate step' (0, m)
+solve2 = bimap length head . break (all (==0)) . iterate step
 
 main' :: String -> IO ()
 main' raw = do

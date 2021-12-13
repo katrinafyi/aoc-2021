@@ -35,10 +35,11 @@ parse raw = (board, parseFold <$> tail fs)
         board = (\y -> (\x -> (x,y) `elem` dots) <$> [0..maxX]) <$> [0..maxY]
 
 doFoldY :: Int -> [[Bool]] -> [[Bool]]
-doFoldY n b = zipWith (zipWith (||)) top (reverse bot)
+doFoldY n b = zipWith (zipWith (||)) top (reverse bot')
     where
         top = take n b
         bot = drop (n+1) b
+        bot' = bot ++ replicate (n - length bot) (repeat False)
 
 doFoldX :: Int -> [[Bool]] -> [[Bool]]
 doFoldX n b = transpose $ doFoldY n $ transpose b
@@ -49,15 +50,15 @@ doFold (FoldY n) = doFoldY n
 
 solve1 :: ([[Bool]], [Fold]) -> Int
 solve1 (b, f:_) = count id $ concat $ doFold f b
+solve1 (_, _) = undefined
 
 solve2 :: ([[Bool]], [Fold]) -> [[Bool]]
-solve2 (b, fs) = foldl' (\b f -> doFold f b) b fs
+solve2 (b, fs) = foldl' (flip doFold) b fs
 
 main' :: String -> IO ()
 main' raw = do
     let input = parse raw
     -- print $ input
-    -- mapM_ putStrLn $ intercalate "," <$> allPaths2 input
 
     print $ solve1 input
     let s2 = solve2 input

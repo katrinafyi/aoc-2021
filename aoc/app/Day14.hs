@@ -22,8 +22,7 @@ type Rules = M.Map (Char,Char) Char
 parse :: [Char] -> ([Char], Rules)
 parse raw = (head top, M.fromList inserts)
     where
-        (top, bot) = break null ls
-        ls = lines raw
+        (top, bot) = break null $ lines raw
         inserts = (\b -> (two $ b!!0, head $ b!!2)) <$> words <$> tail bot
 
 
@@ -33,24 +32,40 @@ go m (x:y:xs) = case m M.!? (x,y) of
     _ -> x:go m (y:xs)
 go _ x = x
 
-type State = M.Map (Char,Char) Int
 
-
-go' :: Rules -> State -> State
-go' rules s = M.unionWith (+) s delta
+solve1 :: ([Char], Rules) -> (Int,Int)
+solve1 (s, m) = (maxCount,minCount)
     where
-        delta = M.fromList $ concatMap makeDelta $ M.toList rules
-        makeDelta ((a,b),c) = [((a,b), -n), ((a,c), n), ((b,c), n)]
-            where n = M.findWithDefault 0 (a,b) s
-
-solve1 :: Int -> ([Char], Rules) -> ((Int,Int), (String, String))
-solve1 n (s, m) = ((maxCount,minCount), (filter (\c -> maxCount == count (==c) s') chars,
-        filter (\c -> minCount == count (==c) s') chars))
-    where
-        s' = iterate (go m) s !! n
+        s' = iterate (go m) s !! 10
         chars = nub s'
         minCount = minimum $ (\c -> count (==c) s') <$> chars
         maxCount = maximum $ (\c -> count (==c) s') <$> chars
+
+
+type State = M.Map (Char,Char) Integer
+
+delta :: Rules -> State -> State
+delta rules s = M.fromListWith (+) $ concatMap makeDelta $ M.toList rules
+    where
+        makeDelta ((a,b),c) = [((a,b), -n), ((a,c), n), ((c,b), n)]
+            where n = M.findWithDefault 0 (a,b) s
+
+go' :: Rules -> State -> State
+go' rules s = M.filter (/=0) $ M.unionWith (+) s (delta rules s)
+
+toPairCounts :: String -> State
+toPairCounts s' = M.fromListWith (+) $ (flip (,) 1) <$> zip s' (tail s')
+
+solve2 :: ([Char], Rules) -> (Integer,Integer)
+solve2 (s, m) = (maxCount, minCount)
+    where
+        pairs = toPairCounts $ "_" ++ s ++ "_"
+        pairs' = iterate (go' m) pairs !! 40
+        chars = filter (/= '_') $ nub $ fst <$> M.keys pairs'
+
+        hasChar c (a,b) = a == c
+        countChar c = sum $ M.filterWithKey (const . hasChar c) pairs'
+        [maxCount, minCount] = sequence [maximum, minimum] $ countChar <$> chars
 
 
 main' :: String -> IO ()
@@ -59,18 +74,9 @@ main' raw = do
     let (s, m) = input
     print $ input
 
-    let twoDiff = \a c -> c-a*2
-
-    let xs = (\n -> solve1 n input) <$> [1..15]
-    print $ length $ nub $ iterate (go m) s !! 15
-    print $ "asdf"
-    print $ xs
-    let results = fst <$> xs
-    let subs = uncurry (-) <$> results
-    mapM_ print $ subs
-    mapM_ print $ results
-    print $  zipWith (both2 twoDiff) results (tail results)
-    print $  zipWith (twoDiff) subs (tail subs)
+    print $ solve1 input
+    print $ uncurry (-) $ solve2 input
+    print $ solve2 input
 
 
 run :: IO ()

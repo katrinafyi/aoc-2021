@@ -81,6 +81,9 @@ executables:
   d15:
     <<: *exe-defaults
     main:                Day15.hs
+  d16:
+    <<: *exe-defaults
+    main:                Day16.hs
 
 
 tests:
